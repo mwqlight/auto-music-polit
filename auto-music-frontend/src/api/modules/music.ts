@@ -44,11 +44,11 @@ export const deleteMusic = (id: number) => {
 }
 
 // 搜索音乐
-export const searchMusic = (keyword: string) => {
+export const searchMusic = (keyword: string, page: number = 0, size: number = 10) => {
   return request<{ content: Music[] }>({
     url: `/api/v1/music/search`,
     method: 'get',
-    params: { keyword }
+    params: { query: keyword, page, size }
   })
 }
 

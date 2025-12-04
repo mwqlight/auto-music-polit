@@ -64,6 +64,11 @@ public class MusicServiceImpl implements MusicService {
     }
     
     @Override
+    public Page<Music> searchByTitleOrArtist(String keyword, Pageable pageable) {
+        return search(keyword, pageable);
+    }
+    
+    @Override
     public List<Music> findByAudioFingerprint(String audioFingerprint) {
         return musicRepository.findByAudioFingerprint(audioFingerprint);
     }

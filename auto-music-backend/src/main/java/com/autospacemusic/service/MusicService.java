@@ -18,6 +18,7 @@ public interface MusicService {
     List<Music> searchByTitle(String title);
     List<Music> searchByArtist(String artist);
     Page<Music> search(String keyword, Pageable pageable);
+    Page<Music> searchByTitleOrArtist(String keyword, Pageable pageable);
     
     // 过滤相关方法
     List<Music> findByAudioFingerprint(String audioFingerprint);

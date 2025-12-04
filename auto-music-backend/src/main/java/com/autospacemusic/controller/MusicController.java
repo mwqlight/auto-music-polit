@@ -164,6 +164,43 @@ public class MusicController {
     }
     
     /**
+     * 音乐搜索接口
+     * @param query 搜索关键词
+     * @param page 页码
+     * @param size 每页数量
+     * @return 搜索结果
+     */
+    @GetMapping("/search")
+    public ResponseEntity<Map<String, Object>> searchMusic(
+            @RequestParam String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+            Page<Music> musicPage = musicService.searchByTitleOrArtist(query, pageable);
+            
+            List<MusicResponseDto> musicDtos = musicPage.getContent().stream()
+                    .map(this::convertToResponseDto)
+                    .collect(Collectors.toList());
+            
+            response.put("content", musicDtos);
+            response.put("page", musicPage.getNumber());
+            response.put("size", musicPage.getSize());
+            response.put("totalElements", musicPage.getTotalElements());
+            response.put("totalPages", musicPage.getTotalPages());
+            response.put("last", musicPage.isLast());
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("message", "搜索失败: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
      * 更新音乐
      * @param id 音乐ID
      * @param musicDto 音乐请求DTO
@@ -241,42 +278,7 @@ public class MusicController {
                 });
     }
     
-    /**
-     * 搜索音乐
-     * @param keyword 搜索关键词
-     * @param page 页码
-     * @param size 每页数量
-     * @return 搜索结果
-     */
-    @GetMapping("/search")
-    public ResponseEntity<Map<String, Object>> searchMusic(
-            @RequestParam String keyword,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        
-        Map<String, Object> response = new HashMap<>();
-        
-        try {
-            Pageable pageable = PageRequest.of(page, size);
-            Page<Music> musicPage = musicService.search(keyword, pageable);
-            
-            List<MusicResponseDto> musicDtos = musicPage.getContent().stream()
-                    .map(this::convertToResponseDto)
-                    .collect(Collectors.toList());
-            
-            response.put("content", musicDtos);
-            response.put("page", musicPage.getNumber());
-            response.put("size", musicPage.getSize());
-            response.put("totalElements", musicPage.getTotalElements());
-            response.put("totalPages", musicPage.getTotalPages());
-            response.put("last", musicPage.isLast());
-            
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            response.put("message", "搜索失败: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
-    }
+
     
     /**
      * 根据音频指纹获取音乐
