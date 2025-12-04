@@ -43,7 +43,7 @@
 
             <button 
               class="recognize-btn"
-              @click="recognizeMusic"
+              @click="recognizeMusicHandler"
               :disabled="!selectedRecognizeFile || isRecognizing"
             >
               {{ isRecognizing ? '正在识别...' : '开始识别音乐' }}
@@ -100,7 +100,7 @@
 
             <button 
               class="generate-btn"
-              @click="generateMusic"
+              @click="generateMusicHandler"
               :disabled="isGenerating"
             >
               {{ isGenerating ? '生成中...' : '生成AI音乐' }}
@@ -166,7 +166,7 @@
 
             <button 
               class="remix-btn"
-              @click="remixMusic"
+              @click="remixMusicHandler"
               :disabled="!selectedRemixFile || !remixStyle || isRemixing"
             >
               {{ isRemixing ? '混音中...' : '开始AI混音' }}

@@ -6,7 +6,7 @@
       </div>
       <nav class="navigation">
         <router-link to="/">首页</router-link>
-        <router-link to="/music">音乐库</router-link>
+        <router-link to="/music-library">音乐库</router-link>
         <router-link to="/playlists">播放列表</router-link>
         <router-link to="/favorites">我的收藏</router-link>
         <router-link to="/ai-music">AI音乐</router-link>
