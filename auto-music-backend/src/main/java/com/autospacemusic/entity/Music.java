@@ -34,6 +34,9 @@ public class Music {
     @Column(name = "mood")
     private String mood;
     
+    @Column(name = "quality")
+    private String quality;
+    
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     
@@ -111,6 +114,14 @@ public class Music {
     
     public void setMood(String mood) {
         this.mood = mood;
+    }
+    
+    public String getQuality() {
+        return quality;
+    }
+    
+    public void setQuality(String quality) {
+        this.quality = quality;
     }
     
     public LocalDateTime getCreatedAt() {

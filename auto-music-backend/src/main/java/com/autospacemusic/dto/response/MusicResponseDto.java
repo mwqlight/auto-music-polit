@@ -14,6 +14,7 @@ public class MusicResponseDto {
     private Boolean aiGenerated;
     private String genre;
     private String mood;
+    private String quality;
     
     // Getters and setters
     public Long getId() {
@@ -102,5 +103,13 @@ public class MusicResponseDto {
     
     public void setMood(String mood) {
         this.mood = mood;
+    }
+    
+    public String getQuality() {
+        return quality;
+    }
+    
+    public void setQuality(String quality) {
+        this.quality = quality;
     }
 }
