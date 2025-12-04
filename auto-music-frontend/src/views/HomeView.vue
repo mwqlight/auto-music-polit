@@ -56,6 +56,9 @@ onMounted(() => {
         <button class="high-tech-button" @click="$router.push('/recommendations')">
           🔍 智能推荐
         </button>
+        <button class="high-tech-button" @click="$router.push('/audio-lab')">
+          🔬 音频实验室
+        </button>
       </div>
     </section>
     

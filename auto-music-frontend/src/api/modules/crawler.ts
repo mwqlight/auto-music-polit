@@ -60,3 +60,69 @@ export const crawlImmediate = (sourceUrl: string, sourceType: string = 'general'
     params: { sourceUrl, sourceType }
   })
 }
+
+// 从本地视频文件提取音乐
+export const extractMusicFromVideoFile = (videoFile: File) => {
+  const formData = new FormData()
+  formData.append('videoFile', videoFile)
+  
+  return request({
+    url: '/api/v1/crawler/extract/video-file',
+    method: 'post',
+    data: formData,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+}
+
+// 从视频链接提取音乐
+export const extractMusicFromVideoUrl = (videoUrl: string) => {
+  return request({
+    url: '/api/v1/crawler/extract/video-url',
+    method: 'post',
+    params: { videoUrl }
+  })
+}
+
+// 音乐搜索功能
+export const searchMusic = (keyword: string) => {
+  return request({
+    url: '/api/v1/crawler/search',
+    method: 'get',
+    params: { keyword }
+  })
+}
+
+// 音频剪切功能
+export const cutAudio = (audioFile: File, startTime: number, endTime: number) => {
+  const formData = new FormData()
+  formData.append('audioFile', audioFile)
+  formData.append('startTime', startTime.toString())
+  formData.append('endTime', endTime.toString())
+  
+  return request({
+    url: '/api/v1/crawler/edit/cut',
+    method: 'post',
+    data: formData,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+}
+
+// 添加音效功能
+export const addAudioEffect = (audioFile: File, effectType: string) => {
+  const formData = new FormData()
+  formData.append('audioFile', audioFile)
+  formData.append('effectType', effectType)
+  
+  return request({
+    url: '/api/v1/crawler/edit/effect',
+    method: 'post',
+    data: formData,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+}

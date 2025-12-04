@@ -1,12 +1,12 @@
 <template>
   <div id="app">
-    <router-view />
+    <MainLayout />
     <AudioPlayer />
   </div>
 </template>
 
 <script setup lang="ts">
-import { RouterView } from 'vue-router'
+import MainLayout from '@/components/layout/MainLayout.vue'
 import AudioPlayer from '@/components/audio/AudioPlayer.vue'
 </script>
 

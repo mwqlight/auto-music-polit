@@ -6,10 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/crawler")
@@ -204,6 +208,180 @@ public class CrawlerController {
             response.put("code", 500);
             response.put("message", "立即爬取失败: " + e.getMessage());
             
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
+     * 从本地视频文件提取音乐
+     * @param videoFile 视频文件
+     * @return 提取的音乐信息
+     */
+    @PostMapping("/extract/video-file")
+    public ResponseEntity<Map<String, Object>> extractMusicFromVideoFile(
+            @RequestParam("videoFile") MultipartFile videoFile) {
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            // 保存上传的视频文件到临时目录
+            File tempVideoFile = File.createTempFile("uploaded_video_", ".mp4");
+            tempVideoFile.deleteOnExit();
+            videoFile.transferTo(tempVideoFile);
+            
+            // 提取音乐
+            Music music = crawlerService.extractMusicFromVideoFile(tempVideoFile);
+            
+            if (music != null) {
+                response.put("code", 200);
+                response.put("message", "音乐提取成功");
+                response.put("data", music);
+                return ResponseEntity.ok(response);
+            } else {
+                response.put("code", 500);
+                response.put("message", "音乐提取失败");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            }
+        } catch (Exception e) {
+            response.put("code", 500);
+            response.put("message", "音乐提取失败: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
+     * 从视频链接提取音乐
+     * @param videoUrl 视频链接
+     * @return 提取的音乐信息
+     */
+    @PostMapping("/extract/video-url")
+    public ResponseEntity<Map<String, Object>> extractMusicFromVideoUrl(
+            @RequestParam String videoUrl) {
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            Music music = crawlerService.extractMusicFromVideoUrl(videoUrl);
+            
+            if (music != null) {
+                response.put("code", 200);
+                response.put("message", "音乐提取成功");
+                response.put("data", music);
+                return ResponseEntity.ok(response);
+            } else {
+                response.put("code", 500);
+                response.put("message", "音乐提取失败");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            }
+        } catch (Exception e) {
+            response.put("code", 500);
+            response.put("message", "音乐提取失败: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
+     * 音乐搜索功能
+     * @param keyword 搜索关键词
+     * @return 搜索结果
+     */
+    @GetMapping("/search")
+    public ResponseEntity<Map<String, Object>> searchMusic(
+            @RequestParam String keyword) {
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            List<Music> searchResults = crawlerService.searchMusic(keyword);
+            
+            response.put("code", 200);
+            response.put("message", "搜索成功");
+            response.put("data", searchResults);
+            response.put("count", searchResults.size());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("code", 500);
+            response.put("message", "搜索失败: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
+     * 音频剪切功能
+     * @param audioFile 音频文件
+     * @param startTime 开始时间（秒）
+     * @param endTime 结束时间（秒）
+     * @return 剪切后的音频文件路径
+     */
+    @PostMapping("/edit/cut")
+    public ResponseEntity<Map<String, Object>> cutAudio(
+            @RequestParam("audioFile") MultipartFile audioFile,
+            @RequestParam int startTime,
+            @RequestParam int endTime) {
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            // 保存上传的音频文件到临时目录
+            File tempAudioFile = File.createTempFile("uploaded_audio_", ".mp3");
+            tempAudioFile.deleteOnExit();
+            audioFile.transferTo(tempAudioFile);
+            
+            // 剪切音频
+            File cutFile = crawlerService.cutAudio(tempAudioFile, startTime, endTime);
+            
+            if (cutFile != null && cutFile.exists()) {
+                response.put("code", 200);
+                response.put("message", "音频剪切成功");
+                response.put("data", cutFile.getAbsolutePath());
+                return ResponseEntity.ok(response);
+            } else {
+                response.put("code", 500);
+                response.put("message", "音频剪切失败");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            }
+        } catch (Exception e) {
+            response.put("code", 500);
+            response.put("message", "音频剪切失败: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
+     * 添加音效功能
+     * @param audioFile 音频文件
+     * @param effectType 音效类型
+     * @return 添加音效后的音频文件路径
+     */
+    @PostMapping("/edit/effect")
+    public ResponseEntity<Map<String, Object>> addAudioEffect(
+            @RequestParam("audioFile") MultipartFile audioFile,
+            @RequestParam String effectType) {
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            // 保存上传的音频文件到临时目录
+            File tempAudioFile = File.createTempFile("uploaded_audio_", ".mp3");
+            tempAudioFile.deleteOnExit();
+            audioFile.transferTo(tempAudioFile);
+            
+            // 添加音效
+            File effectFile = crawlerService.addAudioEffect(tempAudioFile, effectType);
+            
+            if (effectFile != null && effectFile.exists()) {
+                response.put("code", 200);
+                response.put("message", "音效添加成功");
+                response.put("data", effectFile.getAbsolutePath());
+                return ResponseEntity.ok(response);
+            } else {
+                response.put("code", 500);
+                response.put("message", "音效添加失败");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            }
+        } catch (Exception e) {
+            response.put("code", 500);
+            response.put("message", "音效添加失败: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }

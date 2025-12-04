@@ -3,6 +3,7 @@ package com.autospacemusic.service.impl;
 import com.autospacemusic.entity.Music;
 import com.autospacemusic.service.CrawlerService;
 import com.autospacemusic.service.MusicService;
+import com.autospacemusic.util.AudioUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -18,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class CrawlerServiceImpl implements CrawlerService {
@@ -171,6 +175,175 @@ public class CrawlerServiceImpl implements CrawlerService {
     @Override
     public List<String> getSupportedSourceTypes() {
         return SUPPORTED_SOURCE_TYPES;
+    }
+    
+    @Override
+    public Music extractMusicFromVideoFile(File videoFile) {
+        // 从本地视频文件提取音乐
+        try {
+            // 使用FFmpeg或其他工具提取音频
+            String audioFilePath = AudioUtils.extractAudioFromVideo(videoFile.getAbsolutePath());
+            
+            // 创建音乐对象
+            Music music = new Music();
+            music.setTitle(extractTitleFromFilename(videoFile.getName()));
+            music.setArtist("未知艺术家");
+            music.setFilePath(audioFilePath);
+            music.setDurationSeconds(AudioUtils.getAudioDuration(audioFilePath));
+            music.setGenre("未知");
+            music.setMood("未知");
+            music.setQuality("高");
+            music.setCreatedAt(LocalDateTime.now());
+            music.setUpdatedAt(LocalDateTime.now());
+            
+            // 分析音乐特征
+            analyzeAndClassifyMusic(music);
+            
+            return music;
+        } catch (Exception e) {
+            System.err.println("从视频文件提取音乐失败: " + e.getMessage());
+            return null;
+        }
+    }
+    
+    @Override
+    public Music extractMusicFromVideoUrl(String videoUrl) {
+        // 从视频链接提取音乐
+        try {
+            // 下载视频到本地临时文件
+            File tempVideoFile = downloadVideoFromUrl(videoUrl);
+            
+            // 提取音频
+            Music music = extractMusicFromVideoFile(tempVideoFile);
+            
+            // 设置音乐标题为视频标题
+            music.setTitle(extractTitleFromVideoUrl(videoUrl));
+            
+            // 删除临时文件
+            tempVideoFile.delete();
+            
+            return music;
+        } catch (Exception e) {
+            System.err.println("从视频链接提取音乐失败: " + e.getMessage());
+            return null;
+        }
+    }
+    
+    @Override
+    public List<Music> searchMusic(String keyword) {
+        // 全网音乐搜索功能
+        List<Music> searchResults = new ArrayList<>();
+        
+        try {
+            // 搜索多个音乐源
+            Map<String, String> searchSources = new HashMap<>();
+            searchSources.put("https://www.youtube.com/results?search_query=" + keyword, "youtube");
+            searchSources.put("https://soundcloud.com/search?q=" + keyword, "soundcloud");
+            searchSources.put("https://bandcamp.com/search?q=" + keyword, "bandcamp");
+            
+            Map<String, List<Music>> results = crawlMusicFromMultipleSources(searchSources);
+            
+            // 合并结果
+            for (List<Music> musicList : results.values()) {
+                searchResults.addAll(musicList);
+            }
+            
+            // 去重（根据标题和艺术家）
+            List<Music> uniqueResults = new ArrayList<>();
+            Map<String, Boolean> seen = new HashMap<>();
+            
+            for (Music music : searchResults) {
+                String key = music.getTitle() + "/" + music.getArtist();
+                if (!seen.containsKey(key)) {
+                    seen.put(key, true);
+                    uniqueResults.add(music);
+                }
+            }
+            
+            return uniqueResults;
+        } catch (Exception e) {
+            System.err.println("音乐搜索失败: " + e.getMessage());
+            return searchResults;
+        }
+    }
+    
+    @Override
+    public File cutAudio(File audioFile, int startTime, int endTime) {
+        // 音频剪切功能
+        try {
+            return AudioUtils.cutAudio(audioFile, startTime, endTime);
+        } catch (Exception e) {
+            System.err.println("音频剪切失败: " + e.getMessage());
+            return null;
+        }
+    }
+    
+    @Override
+    public File mergeAudios(List<File> audioFiles) {
+        // 音频合并功能
+        try {
+            return AudioUtils.mergeAudios(audioFiles);
+        } catch (Exception e) {
+            System.err.println("音频合并失败: " + e.getMessage());
+            return null;
+        }
+    }
+    
+    @Override
+    public File addAudioEffect(File audioFile, String effectType) {
+        // 添加音效功能
+        try {
+            return AudioUtils.addAudioEffect(audioFile, effectType);
+        } catch (Exception e) {
+            System.err.println("添加音效失败: " + e.getMessage());
+            return null;
+        }
+    }
+    
+    // 从文件名提取标题
+    private String extractTitleFromFilename(String filename) {
+        // 移除文件扩展名
+        int lastDotIndex = filename.lastIndexOf('.');
+        if (lastDotIndex != -1) {
+            filename = filename.substring(0, lastDotIndex);
+        }
+        
+        // 替换下划线和连字符为空格
+        return filename.replaceAll("[_-]", " ").trim();
+    }
+    
+    // 从视频链接提取标题
+    private String extractTitleFromVideoUrl(String videoUrl) throws IOException {
+        Document document = Jsoup.connect(videoUrl)
+                .userAgent("Mozilla/5.0")
+                .timeout(10000)
+                .get();
+        
+        Element titleElement = document.selectFirst("title");
+        if (titleElement != null) {
+            String title = titleElement.text();
+            // 移除常见的视频网站后缀
+            title = title.replaceAll("\\| YouTube", "")
+                        .replaceAll("\\| SoundCloud", "")
+                        .replaceAll("\\| Bandcamp", "")
+                        .trim();
+            return title;
+        }
+        
+        return "未知标题";
+    }
+    
+    // 从视频链接下载视频到本地临时文件
+    private File downloadVideoFromUrl(String videoUrl) throws IOException {
+        // 创建临时文件
+        File tempFile = File.createTempFile("video_", ".mp4");
+        tempFile.deleteOnExit();
+        
+        // 使用Jsoup或其他工具下载视频
+        // 这里只是示例，实际需要使用更专业的视频下载库
+        System.out.println("正在下载视频: " + videoUrl);
+        
+        return tempFile;
     }
     
     // 示例定时任务，每天凌晨2点执行

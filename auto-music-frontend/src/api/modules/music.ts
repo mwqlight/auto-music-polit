@@ -91,3 +91,8 @@ export const getAllQualities = () => {
     method: 'get'
   })
 }
+
+// 添加音乐到库
+export const addMusicToLibrary = (data: Partial<Music>) => {
+  return createMusic(data)
+}

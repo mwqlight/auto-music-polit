@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 
 // 创建axios实例
 const service: AxiosInstance = axios.create({
-  baseURL: 'http://localhost:8082', // 后端API基础路径
+  baseURL: 'http://localhost:8083', // 后端API基础路径
   timeout: 15000, // 请求超时时间
   headers: {
     'Content-Type': 'application/json'
