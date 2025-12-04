@@ -60,3 +60,35 @@ export const crawlImmediate = (sourceUrl: string, sourceType: string = 'general'
     params: { sourceUrl, sourceType }
   })
 }
+
+// 上传视频文件并提取音频
+export const uploadVideo = (formData: FormData, onProgress?: (progressEvent: any) => void) => {
+  return request({
+    url: '/api/v1/crawler/extract-audio',
+    method: 'post',
+    data: formData,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    onUploadProgress: onProgress
+  })
+}
+
+// 从视频URL提取音频
+export const extractAudioFromUrl = (videoUrl: string, onProgress?: (progressEvent: any) => void) => {
+  return request({
+    url: '/api/v1/crawler/extract-audio-from-url',
+    method: 'post',
+    params: { videoUrl },
+    onUploadProgress: onProgress
+  })
+}
+
+// 音乐搜索
+export const searchMusic = (keyword: string, page: number = 1, size: number = 10) => {
+  return request({
+    url: '/api/v1/crawler/search',
+    method: 'get',
+    params: { keyword, page, size }
+  })
+}

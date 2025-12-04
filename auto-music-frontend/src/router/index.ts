@@ -36,6 +36,16 @@ const routes: Array<RouteRecordRaw> = [
     path: '/recommendations',
     name: 'recommendations',
     component: () => import('@/views/RecommendationsView.vue')
+  },
+  {
+    path: '/video-extractor',
+    name: 'videoExtractor',
+    component: () => import('@/views/VideoExtractor.vue')
+  },
+  {
+    path: '/video-extractor-full',
+    name: 'videoExtractorFull',
+    component: () => import('@/views/VideoExtractorFull.vue')
   }
 ]
 
