@@ -6,9 +6,14 @@
         <input 
           type="text" 
           v-model="searchKeyword" 
-          placeholder="搜索音乐..." 
-          @input="handleSearch"
+          placeholder="搜索音乐..."
         />
+      </div>
+      <div class="quality-filter">
+        <select v-model="selectedQuality">
+          <option value="">所有质量</option>
+          <option v-for="quality in qualities" :key="quality" :value="quality">{{ quality }}</option>
+        </select>
       </div>
     </div>
     <div class="list-container">
@@ -44,22 +49,36 @@ const favoriteStore = useFavoriteStore()
 
 // 响应式数据
 const searchKeyword = ref('')
+const selectedQuality = ref('')
+const qualities = ref<string[]>([])
 
-// 计算属性
-const musicList = computed(() => musicStore.musicList)
+// 计算属性：支持质量和关键词组合筛选
+const musicList = computed(() => {
+  let filteredList = [...musicStore.musicList]
+  
+  // 根据关键词筛选
+  if (searchKeyword.value.trim()) {
+    const keyword = searchKeyword.value.toLowerCase()
+    filteredList = filteredList.filter(music => 
+      music.title.toLowerCase().includes(keyword) || 
+      music.artist.toLowerCase().includes(keyword)
+    )
+  }
+  
+  // 根据音乐质量筛选
+  if (selectedQuality.value) {
+    filteredList = filteredList.filter(music => music.quality === selectedQuality.value)
+  }
+  
+  return filteredList
+})
 
 // 方法
 const selectMusic = (music: Music) => {
   musicStore.setCurrentMusic(music)
 }
 
-const handleSearch = () => {
-  if (searchKeyword.value.trim() !== '') {
-    musicStore.searchMusic(searchKeyword.value)
-  } else {
-    musicStore.fetchMusicList()
-  }
-}
+
 
 const formatDuration = (seconds: number) => {
   const mins = Math.floor(seconds / 60)
@@ -83,9 +102,17 @@ const isFavorite = (musicId: number) => {
   return favoriteStore.favorites.some(fav => fav.musicId === musicId)
 }
 
+const fetchQualities = async () => {
+  const qualityList = await musicStore.fetchAllQualities()
+  qualities.value = qualityList
+}
+
+
+
 // 生命周期钩子
 onMounted(() => {
   musicStore.fetchMusicList()
+  fetchQualities()
 })
 </script>
 
@@ -103,6 +130,8 @@ onMounted(() => {
   align-items: center;
   padding: 16px;
   border-bottom: 1px solid #eee;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
 .list-header h2 {
@@ -115,6 +144,13 @@ onMounted(() => {
   border: 1px solid #ddd;
   border-radius: 4px;
   width: 200px;
+}
+
+.quality-filter select {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-left: 16px;
 }
 
 .list-container {

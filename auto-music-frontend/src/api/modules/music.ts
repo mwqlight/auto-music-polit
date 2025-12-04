@@ -3,7 +3,7 @@ import { Music } from '@/types/models/music'
 
 // 获取所有音乐
 export const getMusicList = () => {
-  return request<Music[]>({
+  return request<{ content: Music[] }>({
     url: '/api/v1/music',
     method: 'get'
   })
@@ -45,7 +45,7 @@ export const deleteMusic = (id: number) => {
 
 // 搜索音乐
 export const searchMusic = (keyword: string) => {
-  return request<Music[]>({
+  return request<{ content: Music[] }>({
     url: `/api/v1/music/search`,
     method: 'get',
     params: { keyword }
@@ -62,7 +62,7 @@ export const getMusicByFingerprint = (fingerprint: string) => {
 
 // 根据风格查找音乐
 export const getMusicByGenre = (genre: string) => {
-  return request<Music[]>({
+  return request<{ content: Music[] }>({
     url: `/api/v1/music/genre/${genre}`,
     method: 'get'
   })
@@ -70,7 +70,7 @@ export const getMusicByGenre = (genre: string) => {
 
 // 根据情绪查找音乐
 export const getMusicByMood = (mood: string) => {
-  return request<Music[]>({
+  return request<{ content: Music[] }>({
     url: `/api/v1/music/mood/${mood}`,
     method: 'get'
   })
@@ -78,8 +78,16 @@ export const getMusicByMood = (mood: string) => {
 
 // 获取AI生成的音乐
 export const getAiGeneratedMusic = () => {
-  return request<Music[]>({
+  return request<{ content: Music[] }>({
     url: `/api/v1/music/ai-generated`,
+    method: 'get'
+  })
+}
+
+// 获取所有音乐质量
+export const getAllQualities = () => {
+  return request<string[]>({
+    url: `/api/v1/music/qualities`,
     method: 'get'
   })
 }
