@@ -335,57 +335,59 @@ const downloadRemixedMusic = () => {
 .ai-music-view {
   max-width: 1200px;
   margin: 0 auto;
+  padding: 20px;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+  min-height: 100vh;
 }
 
-.ai-header h1 {
-  color: #2c3e50;
-  margin-bottom: 10px;
+.page-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  color: #00d4ff;
+  text-align: center;
+  text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+  background: linear-gradient(45deg, #00d4ff, #ff00ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.ai-header p {
-  color: #7f8c8d;
-  margin-bottom: 30px;
+.page-header p {
+  color: #00ff9d;
+  margin-bottom: 3rem;
+  text-align: center;
+  font-size: 1.1rem;
+  text-shadow: 0 0 10px rgba(0, 255, 157, 0.3);
 }
 
-.ai-tabs {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+.ai-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
 }
 
-.ai-tabs button {
-  padding: 10px 20px;
-  background: #ecf0f1;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
+.feature-section {
+  background: rgba(26, 26, 46, 0.8);
+  border-radius: 12px;
+  padding: 2rem;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  box-shadow: 0 0 30px rgba(0, 212, 255, 0.1);
+  backdrop-filter: blur(10px);
   transition: all 0.3s ease;
 }
 
-.ai-tabs button.active {
-  background: #9b59b6;
-  color: white;
+.feature-section:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 50px rgba(0, 212, 255, 0.2);
+  border-color: rgba(0, 212, 255, 0.5);
 }
 
-.ai-content {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 30px;
-}
-
-.creation-panel, .recognition-panel, .remix-panel, .recommendations-panel {
-  background: white;
-  border-radius: 8px;
-  padding: 25px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.creation-panel h2, .recognition-panel h2, .remix-panel h2, .recommendations-panel h2 {
-  margin-top: 0;
-  color: #2c3e50;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 10px;
+.feature-section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #00d4ff;
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
 }
 
 .form-group {
@@ -396,30 +398,50 @@ const downloadRemixedMusic = () => {
   display: block;
   margin-bottom: 5px;
   font-weight: bold;
-  color: #2c3e50;
+  color: #00ff9d;
+  text-shadow: 0 0 5px rgba(0, 255, 157, 0.3);
 }
 
 .form-group select, .form-group input[type="range"] {
   width: 100%;
   padding: 8px;
   border-radius: 4px;
-  border: 1px solid #ddd;
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  background: rgba(10, 10, 10, 0.5);
+  color: #00d4ff;
+  backdrop-filter: blur(5px);
 }
 
-.generate-btn, .recognize-btn, .remix-btn {
-  background: #9b59b6;
+.form-group select:focus, .form-group input[type="range"]:focus {
+  outline: none;
+  border-color: #00d4ff;
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+}
+
+.generate-btn, .recognize-btn, .remix-btn, .upload-btn, .download-btn {
+  background: linear-gradient(45deg, #00d4ff, #ff00ff);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   padding: 12px 20px;
   cursor: pointer;
   font-size: 16px;
   width: 100%;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
 }
 
-.generate-btn:disabled, .recognize-btn:disabled, .remix-btn:disabled {
-  background: #bdc3c7;
+.generate-btn:hover, .recognize-btn:hover, .remix-btn:hover, .upload-btn:hover, .download-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+}
+
+.generate-btn:disabled, .recognize-btn:disabled, .remix-btn:disabled, .upload-btn:disabled {
+  background: rgba(10, 10, 10, 0.5);
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  border: 1px solid rgba(0, 212, 255, 0.2);
 }
 
 .upload-area {
@@ -427,75 +449,93 @@ const downloadRemixedMusic = () => {
 }
 
 .drop-zone {
-  border: 2px dashed #ccc;
+  border: 2px dashed rgba(0, 212, 255, 0.3);
   border-radius: 8px;
   padding: 40px 20px;
   text-align: center;
   transition: all 0.3s ease;
-  background-color: #fafafa;
+  background: rgba(10, 10, 10, 0.5);
+  backdrop-filter: blur(5px);
+}
+
+.drop-zone:hover {
+  border-color: #00d4ff;
+  background: rgba(0, 212, 255, 0.05);
 }
 
 .drop-zone.drag-over {
-  border-color: #9b59b6;
-  background-color: #f0e6f5;
+  border-color: #00ff9d;
+  background: rgba(0, 255, 157, 0.05);
+  box-shadow: 0 0 30px rgba(0, 255, 157, 0.2);
 }
 
 .upload-content p {
   margin-bottom: 15px;
-  color: #7f8c8d;
+  color: #00d4ff;
 }
 
-.recommendations-list {
-  max-height: 400px;
-  overflow-y: auto;
+.file-types {
+  font-size: 0.9rem;
+  color: #00ff9d;
 }
 
-.recommendation-item {
-  padding: 15px;
-  border-bottom: 1px solid #eee;
-  cursor: pointer;
-}
-
-.recommendation-item:hover {
-  background: #f5f5f5;
-}
-
-.recommendation-item h3 {
-  margin: 0 0 5px 0;
-  color: #2c3e50;
-}
-
-.recommendation-item p {
-  margin: 0;
-  color: #7f8c8d;
-}
-
-.no-recommendations {
-  text-align: center;
-  padding: 20px;
-  color: #7f8c8d;
-}
-
-.recognition-result, .remix-result {
+.recognition-result, .playback-section {
   margin-top: 20px;
   padding: 15px;
-  background-color: #f8f9fa;
+  background: rgba(10, 10, 10, 0.5);
   border-radius: 4px;
+  border-left: 4px solid #00d4ff;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  backdrop-filter: blur(5px);
 }
 
-.recognition-result h3, .remix-result h3 {
+.recognition-result h3, .playback-section h3 {
   margin-top: 0;
-  color: #2c3e50;
+  color: #00ff9d;
+  text-shadow: 0 0 5px rgba(0, 255, 157, 0.3);
 }
 
 .recognition-result pre {
   white-space: pre-wrap;
   word-break: break-word;
   margin: 0;
-  background: white;
+  background: rgba(10, 10, 10, 0.8);
   padding: 10px;
   border-radius: 4px;
   max-height: 200px;
   overflow-y: auto;
+  color: #00d4ff;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+}
+
+.playback-section audio {
+  width: 100%;
+  margin-bottom: 10px;
+  background: rgba(10, 10, 10, 0.5);
+  border-radius: 4px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .ai-music-view {
+    padding: 10px;
+  }
+  
+  .page-header h1 {
+    font-size: 2rem;
+  }
+  
+  .ai-features {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .feature-section {
+    padding: 1.5rem;
+  }
+  
+  .drop-zone {
+    padding: 20px 10px;
+  }
 }
 </style>

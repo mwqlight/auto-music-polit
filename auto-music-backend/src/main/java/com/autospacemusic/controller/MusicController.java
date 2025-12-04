@@ -3,6 +3,7 @@ package com.autospacemusic.controller;
 import com.autospacemusic.entity.Music;
 import com.autospacemusic.dto.request.MusicRequestDto;
 import com.autospacemusic.dto.response.MusicResponseDto;
+import com.autospacemusic.dto.response.ApiResponse;
 import com.autospacemusic.service.MusicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -55,7 +56,7 @@ public class MusicController {
     }
     
     @GetMapping
-    public ResponseEntity<List<MusicResponseDto>> getAllMusic(
+    public ResponseEntity<ApiResponse<List<MusicResponseDto>>> getAllMusic(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -63,51 +64,51 @@ public class MusicController {
         List<MusicResponseDto> musicDtos = musicPage.getContent().stream()
                 .map(this::convertToResponseDto)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(musicDtos);
+        return ResponseEntity.ok(ApiResponse.success(musicDtos));
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<MusicResponseDto> getMusicById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<MusicResponseDto>> getMusicById(@PathVariable Long id) {
         Optional<Music> music = musicService.findById(id);
-        return music.map(m -> ResponseEntity.ok(convertToResponseDto(m)))
-                .orElse(ResponseEntity.notFound().build());
+        return music.map(m -> ResponseEntity.ok(ApiResponse.success(convertToResponseDto(m))))
+                .orElse(ResponseEntity.ok(ApiResponse.notFound("音乐不存在")));
     }
     
     @PostMapping
-    public ResponseEntity<MusicResponseDto> createMusic(@RequestBody MusicRequestDto musicDto) {
+    public ResponseEntity<ApiResponse<MusicResponseDto>> createMusic(@RequestBody MusicRequestDto musicDto) {
         Music music = convertToEntity(musicDto);
         Music savedMusic = musicService.save(music);
         MusicResponseDto responseDto = convertToResponseDto(savedMusic);
-        return ResponseEntity.ok(responseDto);
+        return ResponseEntity.ok(ApiResponse.success("音乐创建成功", responseDto));
     }
     
     @PutMapping("/{id}")
-    public ResponseEntity<MusicResponseDto> updateMusic(@PathVariable Long id, @RequestBody MusicRequestDto musicDto) {
+    public ResponseEntity<ApiResponse<MusicResponseDto>> updateMusic(@PathVariable Long id, @RequestBody MusicRequestDto musicDto) {
         Optional<Music> existingMusic = musicService.findById(id);
         if (existingMusic.isPresent()) {
             Music music = convertToEntity(musicDto);
             music.setId(id);
             Music updatedMusic = musicService.save(music);
             MusicResponseDto responseDto = convertToResponseDto(updatedMusic);
-            return ResponseEntity.ok(responseDto);
+            return ResponseEntity.ok(ApiResponse.success("音乐更新成功", responseDto));
         } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.ok(ApiResponse.notFound("音乐不存在"));
         }
     }
     
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteMusic(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<String>> deleteMusic(@PathVariable Long id) {
         Optional<Music> music = musicService.findById(id);
         if (music.isPresent()) {
             musicService.deleteById(id);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok(ApiResponse.success("音乐删除成功"));
         } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.ok(ApiResponse.notFound("音乐不存在"));
         }
     }
     
     @GetMapping("/search")
-    public ResponseEntity<List<MusicResponseDto>> searchMusic(
+    public ResponseEntity<ApiResponse<List<MusicResponseDto>>> searchMusic(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String artist) {
         List<Music> results;
@@ -121,42 +122,42 @@ public class MusicController {
         List<MusicResponseDto> responseDtos = results.stream()
                 .map(this::convertToResponseDto)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(responseDtos);
+        return ResponseEntity.ok(ApiResponse.success(responseDtos));
     }
     
     @GetMapping("/fingerprint/{fingerprint}")
-    public ResponseEntity<List<MusicResponseDto>> getMusicByFingerprint(@PathVariable String fingerprint) {
+    public ResponseEntity<ApiResponse<List<MusicResponseDto>>> getMusicByFingerprint(@PathVariable String fingerprint) {
         List<Music> musicList = musicService.findByAudioFingerprint(fingerprint);
         List<MusicResponseDto> responseDtos = musicList.stream()
                 .map(this::convertToResponseDto)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(responseDtos);
+        return ResponseEntity.ok(ApiResponse.success(responseDtos));
     }
     
     @GetMapping("/genre/{genre}")
-    public ResponseEntity<List<MusicResponseDto>> getMusicByGenre(@PathVariable String genre) {
+    public ResponseEntity<ApiResponse<List<MusicResponseDto>>> getMusicByGenre(@PathVariable String genre) {
         List<Music> musicList = musicService.findByGenre(genre);
         List<MusicResponseDto> responseDtos = musicList.stream()
                 .map(this::convertToResponseDto)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(responseDtos);
+        return ResponseEntity.ok(ApiResponse.success(responseDtos));
     }
     
     @GetMapping("/mood/{mood}")
-    public ResponseEntity<List<MusicResponseDto>> getMusicByMood(@PathVariable String mood) {
+    public ResponseEntity<ApiResponse<List<MusicResponseDto>>> getMusicByMood(@PathVariable String mood) {
         List<Music> musicList = musicService.findByMood(mood);
         List<MusicResponseDto> responseDtos = musicList.stream()
                 .map(this::convertToResponseDto)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(responseDtos);
+        return ResponseEntity.ok(ApiResponse.success(responseDtos));
     }
     
     @GetMapping("/ai-generated")
-    public ResponseEntity<List<MusicResponseDto>> getAiGeneratedMusic() {
+    public ResponseEntity<ApiResponse<List<MusicResponseDto>>> getAiGeneratedMusic() {
         List<Music> musicList = musicService.findAiGeneratedMusic();
         List<MusicResponseDto> responseDtos = musicList.stream()
                 .map(this::convertToResponseDto)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(responseDtos);
+        return ResponseEntity.ok(ApiResponse.success(responseDtos));
     }
 }

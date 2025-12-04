@@ -3,6 +3,7 @@ package com.autospacemusic.controller;
 import com.autospacemusic.entity.User;
 import com.autospacemusic.service.UserService;
 import com.autospacemusic.util.JwtUtil;
+import com.autospacemusic.dto.response.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,7 +31,7 @@ public class AuthController {
     private JwtUtil jwtUtil;
     
     @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<ApiResponse<JwtResponse>> authenticateUser(@RequestBody LoginRequest loginRequest) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
@@ -38,22 +39,22 @@ public class AuthController {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String jwt = jwtUtil.generateToken(loginRequest.getUsername());
             
-            return ResponseEntity.ok(new JwtResponse(jwt));
+            return ResponseEntity.ok(ApiResponse.success("登录成功", new JwtResponse(jwt)));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new MessageResponse("用户名或密码错误"));
+            return ResponseEntity.ok(ApiResponse.error("用户名或密码错误"));
         }
     }
     
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody SignupRequest signUpRequest) {
+    public ResponseEntity<ApiResponse<String>> registerUser(@RequestBody SignupRequest signUpRequest) {
         // 检查用户名是否已存在
         if (userService.existsByUsername(signUpRequest.getUsername())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("用户名已被使用"));
+            return ResponseEntity.ok(ApiResponse.error("用户名已被使用"));
         }
         
         // 检查邮箱是否已存在
         if (userService.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("邮箱已被使用"));
+            return ResponseEntity.ok(ApiResponse.error("邮箱已被使用"));
         }
         
         // 创建新用户
@@ -64,7 +65,7 @@ public class AuthController {
         
         userService.save(user);
         
-        return ResponseEntity.ok(new MessageResponse("用户注册成功"));
+        return ResponseEntity.ok(ApiResponse.success("用户注册成功"));
     }
     
     // 内部类
