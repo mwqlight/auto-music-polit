@@ -108,33 +108,35 @@ const toggleFavorite = () => {
 
 <style scoped>
 .music-detail {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
   padding: 20px;
   margin: 20px 0;
+  box-shadow: var(--shadow-sm);
 }
 
 .music-detail.empty {
   text-align: center;
   padding: 40px;
-  color: #7f8c8d;
+  color: var(--text-secondary);
 }
 
 .header {
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-color);
   padding-bottom: 16px;
   margin-bottom: 20px;
 }
 
 .header h2 {
   margin: 0 0 8px 0;
-  color: #2c3e50;
+  color: var(--primary-color);
+  font-size: 24px;
 }
 
 .artist {
   margin: 0;
-  color: #7f8c8d;
+  color: var(--text-secondary);
   font-size: 16px;
 }
 
@@ -148,65 +150,115 @@ const toggleFavorite = () => {
 .detail-item {
   display: flex;
   flex-direction: column;
+  padding: 12px;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  transition: all var(--transition-fast);
+}
+
+.detail-item:hover {
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-sm);
 }
 
 .label {
-  font-weight: bold;
-  color: #2c3e50;
+  font-weight: 600;
+  color: var(--primary-color);
   margin-bottom: 4px;
+  font-size: 14px;
 }
 
 .value {
-  color: #7f8c8d;
+  color: var(--text-secondary);
+  font-size: 14px;
 }
 
 .ai-generated {
   color: #e74c3c;
-  font-weight: bold;
+  font-weight: 600;
 }
 
 .genre-tag, .mood-tag {
   display: inline-block;
   padding: 4px 8px;
-  border-radius: 4px;
+  border-radius: 6px;
   color: white;
   font-size: 12px;
+  font-weight: 500;
 }
 
 .genre-tag {
-  background-color: #3498db;
+  background: var(--gradient-primary);
 }
 
 .mood-tag {
-  background-color: #9b59b6;
+  background: var(--gradient-secondary);
 }
 
 .actions {
   display: flex;
   gap: 12px;
   padding-top: 16px;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--border-color);
 }
 
 .play-button, .favorite-button {
-  padding: 8px 16px;
+  padding: 10px 20px;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
-  font-weight: bold;
+  font-weight: 600;
+  transition: all var(--transition-normal);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .play-button {
-  background-color: #2ecc71;
+  background: var(--gradient-primary);
   color: white;
+  box-shadow: var(--shadow-md);
 }
 
 .favorite-button {
-  background-color: #f39c12;
-  color: white;
+  background: var(--bg-tertiary);
+  color: var(--primary-color);
+  border: 1px solid var(--border-color);
 }
 
-.play-button:hover, .favorite-button:hover {
-  opacity: 0.9;
+.play-button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+}
+
+.favorite-button:hover {
+  background: var(--bg-secondary);
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-md);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .music-detail {
+    padding: 15px;
+    margin: 15px 0;
+  }
+  
+  .header h2 {
+    font-size: 20px;
+  }
+  
+  .details-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .actions {
+    flex-direction: column;
+  }
+  
+  .play-button, .favorite-button {
+    width: 100%;
+  }
 }
 </style>
