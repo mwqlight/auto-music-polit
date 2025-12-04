@@ -1,38 +1,35 @@
 <template>
-  <MainLayout>
-    <div class="playlists-view">
-      <div class="playlists-header">
-        <h1>播放列表</h1>
+  <div class="playlists-view">
+    <div class="playlists-header">
+      <h1>播放列表</h1>
+    </div>
+    
+    <div class="playlists-container">
+      <div class="playlist-list">
+        <div 
+          v-for="playlist in playlists" 
+          :key="playlist.id"
+          class="playlist-item"
+          @click="selectPlaylist(playlist)"
+        >
+          <h3>{{ playlist.name }}</h3>
+          <p>{{ playlist.musics.length }} 首歌曲</p>
+        </div>
       </div>
       
-      <div class="playlists-container">
-        <div class="playlist-list">
-          <div 
-            v-for="playlist in playlists" 
-            :key="playlist.id"
-            class="playlist-item"
-            @click="selectPlaylist(playlist)"
-          >
-            <h3>{{ playlist.name }}</h3>
-            <p>{{ playlist.musics.length }} 首歌曲</p>
-          </div>
-        </div>
-        
-        <div class="playlist-detail">
-          <Playlist v-if="currentPlaylist" />
-          <div v-else class="placeholder">
-            请选择一个播放列表
-          </div>
+      <div class="playlist-detail">
+        <Playlist v-if="currentPlaylist" /> 
+        <div v-else class="placeholder">
+          请选择一个播放列表
         </div>
       </div>
     </div>
-  </MainLayout>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
 import { usePlaylistStore } from '@/store/modules/playlist'
-import MainLayout from '@/components/layout/MainLayout.vue'
 import Playlist from '@/components/audio/Playlist.vue'
 
 const playlistStore = usePlaylistStore()

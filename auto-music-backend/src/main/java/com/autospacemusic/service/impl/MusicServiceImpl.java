@@ -59,6 +59,16 @@ public class MusicServiceImpl implements MusicService {
     }
     
     @Override
+    public Page<Music> search(String keyword, Pageable pageable) {
+        return musicRepository.findByTitleContainingIgnoreCaseOrArtistContainingIgnoreCase(keyword, keyword, pageable);
+    }
+    
+    @Override
+    public Page<Music> searchByTitleOrArtist(String keyword, Pageable pageable) {
+        return search(keyword, pageable);
+    }
+    
+    @Override
     public List<Music> findByAudioFingerprint(String audioFingerprint) {
         return musicRepository.findByAudioFingerprint(audioFingerprint);
     }
@@ -69,12 +79,72 @@ public class MusicServiceImpl implements MusicService {
     }
     
     @Override
+    public Page<Music> findByGenre(String genre, Pageable pageable) {
+        return musicRepository.findByGenre(genre, pageable);
+    }
+    
+    @Override
     public List<Music> findByMood(String mood) {
         return musicRepository.findByMood(mood);
     }
     
     @Override
+    public Page<Music> findByMood(String mood, Pageable pageable) {
+        return musicRepository.findByMood(mood, pageable);
+    }
+    
+    @Override
     public List<Music> findAiGeneratedMusic() {
         return musicRepository.findByAiGeneratedTrue();
+    }
+    
+    @Override
+    public Page<Music> findByAiGenerated(Boolean aiGenerated, Pageable pageable) {
+        return musicRepository.findByAiGenerated(aiGenerated, pageable);
+    }
+    
+    @Override
+    public Page<Music> findByGenreAndMood(String genre, String mood, Pageable pageable) {
+        return musicRepository.findByGenreAndMood(genre, mood, pageable);
+    }
+    
+    @Override
+    public Page<Music> findByGenreAndAiGenerated(String genre, Boolean aiGenerated, Pageable pageable) {
+        return musicRepository.findByGenreAndAiGenerated(genre, aiGenerated, pageable);
+    }
+    
+    @Override
+    public Page<Music> findByMoodAndAiGenerated(String mood, Boolean aiGenerated, Pageable pageable) {
+        return musicRepository.findByMoodAndAiGenerated(mood, aiGenerated, pageable);
+    }
+    
+    @Override
+    public Page<Music> findByGenreAndMoodAndAiGenerated(String genre, String mood, Boolean aiGenerated, Pageable pageable) {
+        return musicRepository.findByGenreAndMoodAndAiGenerated(genre, mood, aiGenerated, pageable);
+    }
+    
+    @Override
+    public long count() {
+        return musicRepository.count();
+    }
+    
+    @Override
+    public long countByAiGenerated(Boolean aiGenerated) {
+        return musicRepository.countByAiGenerated(aiGenerated);
+    }
+    
+    @Override
+    public List<String> findAllGenres() {
+        return musicRepository.findAllGenres();
+    }
+    
+    @Override
+    public List<String> findAllMoods() {
+        return musicRepository.findAllMoods();
+    }
+    
+    @Override
+    public List<String> findAllQualities() {
+        return musicRepository.findAllQualities();
     }
 }
